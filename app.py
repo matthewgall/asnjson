@@ -5,6 +5,7 @@ import requests, redis
 from functools import lru_cache
 from bottle import route, request, response, redirect, default_app, view, template, static_file
 from cymruwhois import Client
+from classes.address import Address
 
 def set_content_type(fn):
 	def _return_json(*args, **kwargs):
@@ -46,26 +47,29 @@ def process(ip):
 		}
 	}
 
+	lookups = []
 	for ip in ip.split(','):
-		if r.get(ip):
-			output['results'].append(json.loads(r.get(ip)))
-			output['results_info']['cached'] = output['results_info']['cached'] + 1
-		else:
-			try:
-				data = Client().lookup(ip)
-			except AttributeError:
-				return return_error(400, "{} is not a valid IP address".format(ip))
+		try:
+			Address(ip)
+			if r.get(ip):
+				output['results'].append(json.loads(r.get(ip)))
+				output['results_info']['cached'] = output['results_info']['cached'] + 1
+			else:
+				lookups.append(ip)
+		except AttributeError:
+			return return_error(400, "{} is not a valid IP address".format(ip))
 
+		for address in Client().lookupmany(lookups):
 			data = {
-				"ip": ip,
-				"asn": data.asn,
-				"prefix": data.prefix,
-				"owner": data.owner
+				"ip": address.ip,
+				"asn": address.asn,
+				"prefix": address.prefix,
+				"owner": address.owner
 			}
 
 			# Now we push it to redis
-			r.set(ip, json.dumps(data), ex=args.redis_ttl)
-			output['results'].append(json.loads(r.get(ip)))
+			r.set(address.ip, json.dumps(data), ex=args.redis_ttl)
+			output['results'].append(json.loads(r.get(address.ip)))
 
 	output['results_info']['count'] = len(output['results'])
 	return json.dumps(output)
