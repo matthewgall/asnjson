@@ -1,5 +1,5 @@
 FROM alpine:latest
-MAINTAINER Matthew Gall <mgall@cloudflare.com>
+MAINTAINER Matthew Gall <docker@matthewgall.com>
 
 RUN apk add --update \
 	build-base \
