@@ -64,7 +64,8 @@ def process(ip):
 				"ip": address.ip,
 				"asn": address.asn,
 				"prefix": address.prefix,
-				"owner": address.owner
+				"owner": address.owner,
+				"cc": address.cc
 			}
 
 			# Now we push it to redis
