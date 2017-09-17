@@ -36,10 +36,11 @@ def return_error(status=404, message=''):
 @route('/get/<ip>', method=('OPTIONS', 'GET'))
 @enable_cors
 @set_content_type
-@lru_cache(maxsize=32)
+@lru_cache(maxsize=256)
 def process(ip):
 
 	output = {
+		"success": True,
 		"results": [],
 		"results_info": {
 			"count": 0,
