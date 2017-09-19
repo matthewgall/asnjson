@@ -17,4 +17,4 @@ COPY . /app
 RUN virtualenv -p python3 /env && /env/bin/pip install -r /app/requirements.txt
 
 EXPOSE 5000
-CMD ["/env/bin/python3", "/app/app.py"]
+CMD ["/env/bin/newrelic-admin", "run-program", "/env/bin/python3", "/app/app.py"]
