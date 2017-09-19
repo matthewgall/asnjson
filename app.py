@@ -82,7 +82,7 @@ def cache():
 	try:
 		output = {}
 		for key in r.scan_iter('*'):
-			output[key.decode("utf-8")] = json.loads(r.get(key))['contacts']['abuse']
+			output[key.decode("utf-8")] = json.loads(r.get(key))
 		return json.dumps(output)
 	except:
 		return return_error(403, "Unable to load keys from redis for display. Please try again later.")
