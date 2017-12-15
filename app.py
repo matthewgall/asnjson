@@ -7,13 +7,6 @@ from bottle import route, request, response, redirect, default_app, view, templa
 from cymruwhois import Client
 from classes.address import Address
 
-def set_content_type(fn):
-	def _return_json(*args, **kwargs):
-		response.headers['Content-Type'] = 'application/json'
-		if request.method != 'OPTIONS':
-			return fn(*args, **kwargs)
-	return _return_json
-
 def enable_cors(fn):
 	def _enable_cors(*args, **kwargs):
 		response.headers['Access-Control-Allow-Origin'] = '*'
@@ -33,11 +26,15 @@ def return_error(status=404, message=''):
 	response.status = status
 	return json.dumps(output)
 
+@route('/static/<filepath:path>')
+def static(filepath):
+	return static_file(filepath, root='views/static')
+
 @route('/get/<ip>', method=('OPTIONS', 'GET'))
+@route('/get/<ip>/<content_type>', method=('OPTIONS', 'GET'))
 @enable_cors
-@set_content_type
 @lru_cache(maxsize=256)
-def process(ip):
+def process(ip, content_type='html'):
 
 	output = {
 		"success": True,
@@ -74,15 +71,20 @@ def process(ip):
 			output['results'].append(json.loads(r.get(address.ip)))
 
 	output['results_info']['count'] = len(output['results'])
-	return json.dumps(output)
+	if content_type in ['json']:
+		response.headers['Content-Type'] = 'application/json'
+		return json.dumps(output)
+	else:
+		response.headers['Content-Type'] = 'text/html'
+		return template("rec", data=output['results'][0])
 
 @route('/cache')
-@set_content_type
 def cache():
 	try:
 		output = {}
 		for key in r.scan_iter('*'):
 			output[key.decode("utf-8")] = json.loads(r.get(key))
+		response.headers['Content-Type'] = 'application/json'
 		return json.dumps(output)
 	except:
 		return return_error(403, "Unable to load keys from redis for display. Please try again later.")
@@ -94,9 +96,7 @@ def ping():
 
 @route('/')
 def index():
-	if request.query.q != "":
-		return process(request.query.q)
-	return "asnjson.com: Putting an IP address, to an ASN"
+	return template("home")
 
 if __name__ == '__main__':
 
