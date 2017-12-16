@@ -35,9 +35,9 @@ def static(filepath):
 @enable_cors
 def process(ip, contentType='html'):
 
-	if ip == "favicon.ico":
+	if ip in ["favicon.ico", "robots.txt"]:
 		return ""
-	
+
 	output = {
 		"success": True,
 		"results": [],
