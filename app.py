@@ -34,6 +34,10 @@ def static(filepath):
 @route('/<ip>/<contentType>', method=('OPTIONS', 'GET'))
 @enable_cors
 def process(ip, contentType='html'):
+
+	if ip == "favicon.ico":
+		return ""
+	
 	output = {
 		"success": True,
 		"results": [],
