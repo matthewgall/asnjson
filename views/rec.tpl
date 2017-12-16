@@ -1,18 +1,19 @@
-% include('global/header.tpl', title=data['ip'])
+% include('global/header.tpl', title=uri)
 <div class="container">
     <div class="starter-template">
+        % for ip in data:
         <div class="well well-lg">
-            <h1>{{data['ip']}}</h1>
+            <h1>{{ip['ip']}}</h1>
             <p id="counterVal" style="font-size: 42px;">
 <pre>
-ASN: {{data['asn']}}
-Prefix: {{data['prefix']}}
-Owner: {{data['owner']}}
-Country: {{data['cc']}}
+ASN: {{ip['asn']}}
+Prefix: {{ip['prefix']}}
+Owner: {{ip['owner']}}
+Country: {{ip['cc']}}
 </pre>
             </p>
         </div>
-        
+        % end
         <div class="panel panel-primary">
             <div class="panel-heading">
                 <h3 class="panel-title">Need to script it?</h3>
@@ -21,7 +22,7 @@ Country: {{data['cc']}}
                 <p>
                 Verify the results using curl:
                 </p>
-                <pre>curl https://asnjson.com/{{data['ip']}}/json</pre>
+                <pre>curl https://asnjson.com/{{uri}}/json</pre>
             </div>
         </div>
         

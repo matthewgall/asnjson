@@ -43,6 +43,7 @@ def process(ip, contentType='html'):
 		}
 	}
 
+	uri = ip
 	lookups = []
 	for ip in ip.split(','):
 		try:
@@ -74,7 +75,7 @@ def process(ip, contentType='html'):
 		return json.dumps(output)
 	else:
 		response.headers['Content-Type'] = 'text/html'
-		return template("rec", data=output['results'][0])
+		return template("rec", uri=uri, data=output['results'])
 
 @route('/cache')
 def cache():
