@@ -31,11 +31,9 @@ def static(filepath):
 	return static_file(filepath, root='views/static')
 
 @route('/get/<ip>', method=('OPTIONS', 'GET'))
-@route('/get/<ip>/<content_type>', method=('OPTIONS', 'GET'))
+@route('/get/<ip>/<contentType>', method=('OPTIONS', 'GET'))
 @enable_cors
-@lru_cache(maxsize=256)
-def process(ip, content_type='html'):
-
+def process(ip, contentType='html'):
 	output = {
 		"success": True,
 		"results": [],
@@ -71,7 +69,7 @@ def process(ip, content_type='html'):
 			output['results'].append(json.loads(r.get(address.ip)))
 
 	output['results_info']['count'] = len(output['results'])
-	if content_type in ['json']:
+	if contentType in ['json']:
 		response.headers['Content-Type'] = 'application/json'
 		return json.dumps(output)
 	else:
