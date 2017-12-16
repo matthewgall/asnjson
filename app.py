@@ -30,8 +30,8 @@ def return_error(status=404, message=''):
 def static(filepath):
 	return static_file(filepath, root='views/static')
 
-@route('/get/<ip>', method=('OPTIONS', 'GET'))
-@route('/get/<ip>/<contentType>', method=('OPTIONS', 'GET'))
+@route('/<ip>', method=('OPTIONS', 'GET'))
+@route('/<ip>/<contentType>', method=('OPTIONS', 'GET'))
 @enable_cors
 def process(ip, contentType='html'):
 	output = {
@@ -96,7 +96,7 @@ def ping():
 def index():
 	if request.method == "POST":
 		if request.forms.get('address', '') != '':
-			return redirect("/get/{}".format(request.forms.get('address')))
+			return redirect("/{}".format(request.forms.get('address')))
 	return template("home")
 
 if __name__ == '__main__':
