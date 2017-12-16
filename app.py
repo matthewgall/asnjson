@@ -94,8 +94,11 @@ def ping():
 	response.content_type = "text/plain"
 	return "pong"
 
-@route('/')
+@route('/', ('GET', 'POST'))
 def index():
+	if request.method == "POST":
+		if request.forms.get('address', '') != '':
+			return redirect("/get/{}".format(request.forms.get('address')))
 	return template("home")
 
 if __name__ == '__main__':
