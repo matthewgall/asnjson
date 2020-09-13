@@ -26,7 +26,7 @@ spec:
         ports:
         - containerPort: 5000
         env:
-          - name: HOST
+          - name: IP
             value: '0.0.0.0'
           - name: REDIS
             value: redis://${NAME}-redis.${NAMESPACE}.svc.cluster.local:6379
