@@ -70,7 +70,7 @@ def process(ip, contentType='html'):
 			}
 
 			# Now we push it to redis
-			r.set(address.ip, json.dumps(data), ex=args.redis_ttl)
+			r.set(address.ip, json.dumps(data), ex=84600)
 			output['results'].append(json.loads(r.get(address.ip)))
 
 	output['results_info']['count'] = len(output['results'])
@@ -113,10 +113,7 @@ if __name__ == '__main__':
 	parser.add_argument("-p", "--port", default=os.getenv('PORT', 5000), help="server port")
 
 	# Redis settings
-	parser.add_argument("--redis-host", default=os.getenv('REDIS_HOST', 'redis'), help="redis hostname")
-	parser.add_argument("--redis-port", default=os.getenv('REDIS_PORT', 6379), help="redis port")
-	parser.add_argument("--redis-pw", default=os.getenv('REDIS_PW', ''), help="redis password")
-	parser.add_argument("--redis-ttl", default=os.getenv('REDIS_TTL', 60), help="redis time to cache records")
+	parser.add_argument("--redis", default=os.getenv('REDIS', 'redis://localhost:6379/0'), help="redis connection string")
 
 	# Verbose mode
 	parser.add_argument("--verbose", "-v", help="increase output verbosity", action="store_true")
@@ -129,13 +126,10 @@ if __name__ == '__main__':
 	log = logging.getLogger(__name__)
 
 	try:
-		r = redis.Redis(
-			host=args.redis_host,
-			port=args.redis_port, 
-			password=args.redis_pw,
-		)
+		if args.redis:
+			r = redis.from_url(args.redis)
 	except:
-		log.error("Unable to connect to redis on {}:{}".format(args.redis_host, args.redis_port))
+		log.fatal("Unable to connect to redis: {}".format(args.redis))
 
 	try:
 		app = default_app()
