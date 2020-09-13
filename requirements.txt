@@ -3,4 +3,3 @@ tornado
 requests
 cymruwhois
 redis
-newrelic
